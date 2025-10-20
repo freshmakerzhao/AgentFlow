@@ -15,6 +15,7 @@ class Planner:
     verbose: bool = False, base_url: str = None, is_multimodal: bool = False, check_model: bool = True, temperature : float = .0):
         self.llm_engine_name = llm_engine_name
         self.is_multimodal = is_multimodal
+        # 加载模型
         # self.llm_engine_mm = create_llm_engine(model_string=llm_engine_name, is_multimodal=False, base_url=base_url, temperature = temperature)
         self.llm_engine_fixed = create_llm_engine(model_string="dashscope", is_multimodal=False, temperature = temperature)
         self.llm_engine = create_llm_engine(model_string=llm_engine_name, is_multimodal=False, base_url=base_url, temperature = temperature)

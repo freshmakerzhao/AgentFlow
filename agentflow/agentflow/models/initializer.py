@@ -35,7 +35,7 @@ class Initializer:
         # if vllm, set up the vllm server
         # if model_string.startswith("vllm-"):
         #     self.setup_vllm_server()
-
+    # 找项目根目录，做基准
     def get_project_root(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         while current_dir != '/':
@@ -50,7 +50,9 @@ class Initializer:
 
         Returns:
             Dict with two keys:
+            - {class name: TOOL_NAME}
             - 'short_to_long': Maps short names (class names) to long names (external TOOL_NAME)
+            - {TOOL_NAME: {class_name, dir_name}}
             - 'long_to_internal': Maps long names to internal class names and directory names
         """
         short_to_long = {}  # e.g., Base_Generator_Tool -> Generalist_Solution_Generator_Tool
@@ -94,6 +96,8 @@ class Initializer:
 
         return {"short_to_long": short_to_long, "long_to_internal": long_to_internal}
 
+    # 构建 toolbox_metadata : TOOL_NAME -> metadata
+    # metadata : {tool_name, tool_description, tool_version, input_types, output_type, demo_commands, user_metadata}
     def load_tools_and_get_metadata(self) -> Dict[str, Any]:
         # Implementation of load_tools_and_get_metadata function
         print("Loading tools and getting metadata...")
@@ -194,15 +198,16 @@ class Initializer:
         print("\n==> Running demo commands for each tool...")
         self.available_tools = []
 
+        # 拿到每个工具的 metadata
         for tool_name, tool_data in self.toolbox_metadata.items():
             print(f"Checking availability of {tool_name}...")
 
             try:
                 # tool_name here is the long external name from metadata
                 # We need to get the internal class name and directory
+                # 拿到类名和目录名
                 if hasattr(self, 'tool_name_mapping'):
                     long_to_internal = self.tool_name_mapping.get('long_to_internal', {})
-
                     if tool_name in long_to_internal:
                         dir_name = long_to_internal[tool_name]["dir_name"]
                         class_name = long_to_internal[tool_name]["class_name"]
@@ -216,6 +221,7 @@ class Initializer:
                     class_name = tool_name
 
                 # Import the tool module
+                # 根据目录名称导入相应tool模块
                 module_name = f"tools.{dir_name}.tool"
                 module = importlib.import_module(module_name)
 
@@ -243,18 +249,19 @@ class Initializer:
         print("\n==> Setting up tools...")
 
         # First, build a temporary mapping by scanning all tools
-        agentflow_dir = self.get_project_root()
-        tools_dir = os.path.join(agentflow_dir, 'tools')
+        agentflow_dir = self.get_project_root() # 获取项目根目录
+        tools_dir = os.path.join(agentflow_dir, 'tools') # 构造工具目录路径
+        # 拿到tool name映射
         self.tool_name_mapping = self.build_tool_name_mapping(tools_dir) if os.path.exists(tools_dir) else {}
 
         # Map input tool names (short) to internal directory names for filtering
         mapped_tools = []
         short_to_long = self.tool_name_mapping.get('short_to_long', {})
         long_to_internal = self.tool_name_mapping.get('long_to_internal', {})
-
+        # 遍历启用的工具
         for tool in self.enabled_tools:
             # If tool is a short name, convert to long name first
-            long_name = short_to_long.get(tool, tool)
+            long_name = short_to_long.get(tool, tool) # TOOL_NAME
 
             # Then get the directory name
             if long_name in long_to_internal:
@@ -262,9 +269,11 @@ class Initializer:
             else:
                 # Fallback to original behavior for unmapped tools
                 mapped_tools.append(tool.lower().replace('_tool', ''))
-
+        # 拿到每个启用工具对应的dir_name
         self.available_tools = mapped_tools
 
+        # 构建TOOL_NAME -> metadata
+        # metadata : {tool_name, tool_description, tool_version, input_types, output_type, demo_commands, user_metadata}
         # Now load tools and get metadata
         self.load_tools_and_get_metadata()
 
@@ -274,6 +283,7 @@ class Initializer:
 
         # available_tools is now already updated by run_demo_commands with external names
         print("✅ Finished setting up tools.")
+        # 存储了可用tool的name
         print(f"✅ Total number of final available tools: {len(self.available_tools)}")
         print(f"✅ Final available tools: {self.available_tools}")
 

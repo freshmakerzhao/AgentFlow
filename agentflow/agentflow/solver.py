@@ -205,8 +205,9 @@ def construct_solver(llm_engine_name : str = "gpt-4o",
                      base_url : str = None,
                      temperature: float = 0.0
                      ):
-    
+    # from agentflow.models.initializer import Initializer
     # Instantiate Initializer
+    # 加载tools/下的工具，并记录metadata
     initializer = Initializer(
         enabled_tools=enabled_tools,
         tool_engine=tool_engine,

@@ -1,11 +1,11 @@
-# Import the solver
+# Import the solver，导入构造器
 from agentflow.agentflow.solver import construct_solver
 
-# Set the LLM engine name
+# Set the LLM engine name，设置LLM引擎名称
 llm_engine_name = "dashscope" # you can use "gpt-4o" as well
 # llm_engine_name = "gpt-4o"
 
-# Construct the solver
+# Construct the solver，初始化 initializer、planner 、Memory、Executor、Solver
 solver = construct_solver(llm_engine_name=llm_engine_name)
 
 # Solve the user query
