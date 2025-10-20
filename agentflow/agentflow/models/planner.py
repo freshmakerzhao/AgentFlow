@@ -17,7 +17,7 @@ class Planner:
         self.is_multimodal = is_multimodal
         # 加载模型
         # self.llm_engine_mm = create_llm_engine(model_string=llm_engine_name, is_multimodal=False, base_url=base_url, temperature = temperature)
-        self.llm_engine_fixed = create_llm_engine(model_string="dashscope", is_multimodal=False, temperature = temperature)
+        # self.llm_engine_fixed = create_llm_engine(model_string="dashscope", is_multimodal=False, temperature = tsemperature)
         self.llm_engine = create_llm_engine(model_string=llm_engine_name, is_multimodal=False, base_url=base_url, temperature = temperature)
         self.toolbox_metadata = toolbox_metadata if toolbox_metadata is not None else {}
         self.available_tools = available_tools if available_tools is not None else []
@@ -120,8 +120,8 @@ Be biref and precise with insight.
         print("Input data of `analyze_query()`: ", input_data)
 
         # self.query_analysis = self.llm_engine_mm(input_data, response_format=QueryAnalysis)
-        # self.query_analysis = self.llm_engine(input_data, response_format=QueryAnalysis)
-        self.query_analysis = self.llm_engine_fixed(input_data, response_format=QueryAnalysis)
+        self.query_analysis = self.llm_engine(input_data, response_format=QueryAnalysis)
+        # self.query_analysis = self.llm_engine_fixed(input_data, response_format=QueryAnalysis)
 
         return str(self.query_analysis).strip()
 
@@ -388,8 +388,8 @@ IMPORTANT: The response must end with either "Conclusion: STOP" or "Conclusion: 
                 print(f"Error reading image file: {str(e)}")
 
         # stop_verification = self.llm_engine_mm(input_data, response_format=MemoryVerification)
-        stop_verification = self.llm_engine_fixed(input_data, response_format=MemoryVerification)
-        # stop_verification = self.llm_engine(input_data, response_format=MemoryVerification)
+        # stop_verification = self.llm_engine_fixed(input_data, response_format=MemoryVerification)
+        stop_verification = self.llm_engine(input_data, response_format=MemoryVerification)
         if json_data is not None:
             json_data[f"verifier_{step_count}_prompt"] = input_data
             json_data[f"verifier_{step_count}_response"] = str(stop_verification)
@@ -500,8 +500,8 @@ Instructions:
                 print(f"Error reading image file: {str(e)}")
 
         # final_output = self.llm_engine_mm(input_data)
-        # final_output = self.llm_engine(input_data)
-        final_output = self.llm_engine_fixed(input_data)
+        final_output = self.llm_engine(input_data)
+        # final_output = self.llm_engine_fixed(input_data)
 
         return final_output
 
@@ -550,8 +550,8 @@ Output Structure:
             except Exception as e:
                 print(f"Error reading image file: {str(e)}")
 
-        # final_output = self.llm_engine(input_data)
-        final_output = self.llm_engine_fixed(input_data)
+        final_output = self.llm_engine(input_data)
+        # final_output = self.llm_engine_fixed(input_data)
         # final_output = self.llm_engine_mm(input_data)
 
         return final_output
