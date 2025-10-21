@@ -22,7 +22,8 @@ For optimal results with the {TOOL_NAME}:
 class Base_Generator_Tool(BaseTool):
     require_llm_engine = True
 
-    def __init__(self, model_string="gpt-4o-mini"):
+    # 原版这里定义为gpt-4o-mini，导致test_all_tools时无法通过
+    def __init__(self, model_string="deepseek-chat"):
         super().__init__(
             tool_name=TOOL_NAME,
             tool_description="A generalized tool that takes query from the user, and answers the question step by step to the best of its ability. It can also accept an image.",
@@ -104,7 +105,8 @@ if __name__ == "__main__":
     # Example usage of the Generalist_Tool
     tool = Base_Generator_Tool()
 
-    tool = Base_Generator_Tool(model_string="gpt-4o-mini") # NOTE: strong LLM for tool
+    tool = Base_Generator_Tool(model_string="deepseek-chat") # NOTE: strong LLM for tool
+    # tool = Base_Generator_Tool(model_string="gpt-4o-mini") # NOTE: strong LLM for tool
     # tool = Base_Generator_Tool(model_string="gemini-1.5-flash") # NOTE: weak 8B model for tool
     # tool = Base_Generator_Tool(model_string="dashscope") # NOTE: weak Qwen2.5-7B model for tool
 

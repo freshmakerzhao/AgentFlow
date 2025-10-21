@@ -142,6 +142,8 @@ class Wikipedia_Search_Tool(BaseTool):
                 "best_practice": BEST_PRACTICE
             }
         )
+        model_string = "deepseek-chat"
+        self.model_string = model_string
         self.llm_engine = create_llm_engine(model_string=model_string, temperature=0.0, top_p=1.0, frequency_penalty=0.0, presence_penalty=0.0)
 
     def _get_wikipedia_url(self, query):
@@ -272,7 +274,8 @@ if __name__ == "__main__":
     """
 
     # Example usage of the Wikipedia_Search_Tool
-    tool = Wikipedia_Search_Tool(model_string="gpt-4o-mini")
+    tool = Wikipedia_Search_Tool(model_string="deepseek-chat")
+    # tool = Wikipedia_Search_Tool(model_string="gpt-4o-mini")
     # tool = Wikipedia_Search_Tool(model_string="gemini-1.5-flash")
     # tool = Wikipedia_Search_Tool(model_string="dashscope") # 
 

@@ -96,6 +96,7 @@ class Web_Search_Tool(BaseTool):
                 "best_practice": BEST_PRACTICE
             }
         )
+        self.model_string = "deepseek-chat" # NOTE: strong LLM for tool
         # self.model_string = "gpt-4o-mini" # NOTE: strong LLM for tool
         # self.model_string = "gemini-1.5-flash" # NOTE: weak 8B model for tool
         # self.model_string = "dashscope" # NOTE: weak Qwen2.5-7B model for tool
