@@ -73,6 +73,7 @@ class Solver:
 
             # [1] Analyze query
             query_start_time = time.time()
+            # 得到LLM对问题的解析（而不是答案）
             query_analysis = self.planner.analyze_query(question, image_path)
             json_data["query_analysis"] = query_analysis
             if self.verbose:
@@ -89,6 +90,8 @@ class Solver:
 
                 # [2] Generate next step
                 local_start_time = time.time()
+                # 根据 query_analysis 和 设定好的prompt，生成下一步的行动预测
+                # 这里的next_step是一个字符串，包含了下一步的行动预测
                 next_step = self.planner.generate_next_step(
                     question, 
                     image_path, 
@@ -108,7 +111,6 @@ class Solver:
                     print(f"\n==> 🚫 Error: Tool '{tool_name}' is not available or not found.")
                     command = "No command was generated because the tool was not found."
                     result = "No result was generated because the tool was not found."
-
                 else:
                     # [3] Generate the tool command
                     local_start_time = time.time()

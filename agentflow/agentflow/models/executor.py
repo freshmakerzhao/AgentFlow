@@ -76,6 +76,7 @@ class Executor:
             self.query_cache_dir = os.path.join(self.root_cache_dir, timestamp)
         os.makedirs(self.query_cache_dir, exist_ok=True)
 
+    # 用 LLM 生成一段能调用 tool_name 的 Python 命令
     def generate_tool_command(self, question: str, image: str, context: str, sub_goal: str, tool_name: str, tool_metadata: Dict[str, Any], step_count: int = 0, json_data: Any = None) -> Any:
         prompt_generate_tool_command = f"""
         Task: Generate a precise command to execute the selected tool.

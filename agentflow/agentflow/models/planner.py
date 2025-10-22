@@ -287,7 +287,7 @@ Rules:
             json_data[f"action_predictor_{step_count}_prompt"] = prompt_generate_next_step
             json_data[f"action_predictor_{step_count}_response"] = str(next_step)
         return next_step
-
+    # 评估当前 memory（已调用工具及其结果）是否完整、准确，判断是否可以直接生成最终答案或需要继续调用工具。
     def verificate_context(self, question: str, image: str, query_analysis: str, memory: Memory, step_count: int = 0, json_data: Any = None) -> Any:
         image_info = self.get_image_info(image)
         if self.is_multimodal:
@@ -432,6 +432,7 @@ IMPORTANT: The response must end with either "Conclusion: STOP" or "Conclusion: 
                 print("No valid conclusion (STOP or CONTINUE) found in the response. Continuing...")
                 return analysis, 'CONTINUE'
 
+    # 基于 query、memory（已执行工具及其结果），让 LLM 生成完整、分步的最终答复（含总结、详尽分析、关键发现与直接答案等）。
     def generate_final_output(self, question: str, image: str, memory: Memory) -> str:
         image_info = self.get_image_info(image)
         if self.is_multimodal:
