@@ -3,8 +3,9 @@ env:
   OPENAI_API_KEY: "YOUR_ONENAI_API" # not that neccesary
   CUDA_VISIBLE_DEVICES: '0,1,2,3,4,5,6,7'
   HYDRA_FULL_ERROR: 1
-  N_GPUS: 8
+  N_GPUS: 1 # gpu 总数
   BASE_MODEL: 'Qwen/Qwen2.5-7B-Instruct' # This model here would be served in vllm used by `agentflow.port` and serve as base model of rollout in the training process. 
+  # BASE_MODEL: 'deepseek-chat' # This model here would be served in vllm used by `agentflow.port` and serve as base model of rollout in the training process. 
   ROLLOUT_TP_SIZE: 1
   EXPERIMENT_NAME: 'rollout_all_7B_useklloss'
   PROJECT_NAME: 'AgentFlow_general'
@@ -12,6 +13,7 @@ env:
   VERBOSITY: 'DEBUG'
   N_WORKERS: 16
   ENABLE_TOOLS: ["Base_Generator_Tool","Python_Coder_Tool","Google_Search_Tool","Wikipedia_Search_Tool"] # if openai API is on then can add tools
+  # TOOL_ENGINE: ["self","self","self","self"] # Default means use tool.py 's default params, you can set "dashscope" as qwen7B, "gpt-40-mini" for gpt, "self" as the training BASE_MODEL
   TOOL_ENGINE: ["dashscope","dashscope","Default","Default"] # Default means use tool.py 's default params, you can set "dashscope" as qwen7B, "gpt-40-mini" for gpt, "self" as the training BASE_MODEL
   # TOOL_ENGINE: ["vllm-Qwen/Qwen2.5-7B-Instruct","vllm-Qwen/Qwen2.5-7B-Instruct","Default","Default"] # if you are not using dashscope api., you can use vllm to serve the qwen2.5-7b-instruct in your own server and please redsign the llm_engine port. .
   TOOL_STEPS: 3 # do not too long 3-5 is good cause it may surge the context
@@ -28,7 +30,7 @@ python_args:
   actor_rollout_ref.rollout.tensor_model_parallel_size: '${ROLLOUT_TP_SIZE}'
   trainer.n_gpus_per_node: '${N_GPUS}'
   data.train_batch_size: 32
-  actor_rollout_ref.rollout.n: 8
+  actor_rollout_ref.rollout.n: 8 # 每个提示的样本数
   actor_rollout_ref.actor.ppo_mini_batch_size: 8
   actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu: 4
   actor_rollout_ref.rollout.log_prob_micro_batch_size_per_gpu: 4

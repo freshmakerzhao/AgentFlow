@@ -10,7 +10,7 @@ uv pip install --no-cache-dir transformers==4.53.3
 #   --extra-index-url https://download.pytorch.org/whl/cu128
 uv pip install --no-deps ~/torch_wheels/torch-*.whl ~/torch_wheels/torchvision-*.whl ~/torch_wheels/torchaudio-*.whl
 uv pip install --no-cache-dir transformers==4.53.3
-# uv pip install --no-cache-dir flash-attn==2.8.1 --no-build-isolation
+uv pip install --no-cache-dir flash-attn==2.8.1 --no-build-isolation
 uv pip install --no-cache-dir vllm==0.9.2
 uv pip install --no-cache-dir verl==0.5.0
 
