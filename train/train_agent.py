@@ -64,7 +64,6 @@ def main():
     print("\nStarting training script with the following command:")
     print(" ".join([str(item) for item in command]))
     print("-" * 50)
-
     try:
         # Use subprocess.run to execute the command.
         # env=os.environ passes all currently set environment variables.

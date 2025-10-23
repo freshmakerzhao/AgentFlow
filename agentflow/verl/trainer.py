@@ -141,7 +141,7 @@ class AgentFlowTrainer(RayPPOTrainer):
         metrics = {}
         timing_raw = {}
 
-        # data key check & no empty check
+        # data key check & no empty check 打印 batch_dict 数据
         print(f"Training data keys: {batch_dict.keys()}")
         for key, value in batch_dict.items():
             if isinstance(value, list):
@@ -167,6 +167,7 @@ class AgentFlowTrainer(RayPPOTrainer):
             with _timer("gen", timing_raw):
                 # gen_batch.non_tensor_batch["step"] = np.ones_like(gen_batch.non_tensor_batch["question"]) * self.global_steps
                 self.async_rollout_manager.wake_up()
+                # 任务入队
                 self.agent_mode_daemon.set_up_data_and_server(
                     gen_batch.non_tensor_batch, self.async_rollout_manager.server_addresses
                 )
@@ -178,7 +179,7 @@ class AgentFlowTrainer(RayPPOTrainer):
 
                 if len(self.agent_mode_daemon._completed_rollouts) == 0:
                     raise ValueError("No training tasks completed. Check server and agent execution.")
-
+                # 将 completed rollouts 收集并转换成训练用的 batch
                 batch, agent_metrics = self.agent_mode_daemon.get_train_data_batch(
                     max_prompt_length=self.config.data.max_prompt_length,
                     max_response_length=self.config.data.max_response_length,
@@ -212,6 +213,7 @@ class AgentFlowTrainer(RayPPOTrainer):
             # compute global_valid tokens
             batch.meta_info["global_token_num"] = torch.sum(batch.batch["attention_mask"], dim=-1).tolist()
 
+            # ---------- Reward 计算 ----------
             with _timer("reward", timing_raw):
                 # compute reward model score
                 if self.use_rm:
@@ -403,7 +405,7 @@ class AgentFlowTrainer(RayPPOTrainer):
         self.global_steps = 0
 
         # load checkpoint before doing anything
-        self._load_checkpoint()
+        self._load_checkpoint() # 如果存在检查点可以恢复训练
 
         assert self.async_rollout_mode, "If agent mode is enabled, async server must be enabled"
         self.agent_mode_daemon = AgentModeDaemon(
@@ -437,15 +439,15 @@ class AgentFlowTrainer(RayPPOTrainer):
         # we start from step 1
         self.global_steps += 1
         last_val_metrics = None
-
+        # 训练循环
         for epoch in range(self.config.trainer.total_epochs):
-            for batch_dict in self.train_dataloader:
+            for batch_dict in self.train_dataloader: # 内层循环，每次迭代得到一个batch的原始dict
                 metrics = {}
                 timing_raw = {}
-                is_last_step = self.global_steps >= self.total_training_steps
+                is_last_step = self.global_steps >= self.total_training_steps # 如果训练步骤达到，就结束
 
                 # train step
-                metrics = self._train_step(batch_dict)
+                metrics = self._train_step(batch_dict) # 进行一次训练步骤，返回该步骤的指标
 
                 # validate
                 if (

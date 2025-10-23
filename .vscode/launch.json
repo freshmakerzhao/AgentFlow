@@ -6,6 +6,40 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "/home/zhaoshuai/Source/AgentFlow/quick_start.py"
+        },
+        {
+            "name": "Python: Debug train_agent.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/train/train_agent.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                // "data.train_batch_size=4"
+            ],
+            "envFile": "${workspaceFolder}/agentflow/.env",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "justMyCode": false,
+            "subProcess": true
+        },
+        {
+            "name": "Python: Debug agentflow.verl (module)",
+            "type": "python",
+            "request": "launch",
+            "module": "agentflow.verl",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                // 例如 "data.train_batch_size=4"
+            ],
+            "envFile": "${workspaceFolder}/agentflow/.env",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "justMyCode": false,
+            "subProcess": true
         }
     ]
 }

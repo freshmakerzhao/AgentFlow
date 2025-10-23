@@ -14,8 +14,16 @@ def main(config):
 
 def run_ppo(config) -> None:
     if not ray.is_initialized():
+        # DEBUG 模式，修改 config 中的local_mode 和 rollout.mode 以适应本地
+        config.actor_rollout_ref.rollout.mode = "sync"
+        debug_local_mode = True
+        
         # this is for local ray cluster
+        # 始化本地/集群 Ray，分配调度器与 worker 资源
+        # DEBUG: 
+        # local_mode=True run Ray tasks in local (current) process so breakpoints are hit
         ray.init(
+            local_mode = debug_local_mode,
             runtime_env={
                 "env_vars": {"TOKENIZERS_PARALLELISM": "true", "NCCL_DEBUG": "WARN", "VLLM_LOGGING_LEVEL": "WARN"}
             },
@@ -36,7 +44,7 @@ class TaskRunner:
         from omegaconf import OmegaConf
 
         from verl.utils.fs import copy_to_local
-
+        # 解析并返回解析后的配置对象
         pprint(OmegaConf.to_container(config, resolve=True))  # resolve=True will eval symbol values
         OmegaConf.resolve(config)
 
@@ -50,7 +58,7 @@ class TaskRunner:
         tokenizer = hf_tokenizer(local_path, trust_remote_code=trust_remote_code)
         processor = hf_processor(local_path, use_fast=True)  # used for multimodal LLM, could be none
 
-        # define worker classes
+        # define worker classes 根据配置文件选择不同的 worker 类
         if config.actor_rollout_ref.actor.strategy in ["fsdp", "fsdp2"]:
             assert config.critic.strategy in ["fsdp", "fsdp2"]
             from verl.single_controller.ray import RayWorkerGroup
@@ -121,7 +129,7 @@ class TaskRunner:
 
         from verl.utils.dataset.rl_dataset import collate_fn
 
-        # Use our special dataset
+        # 创建数据集与采集器
         train_dataset = AgentDataset(
             data_files=config.data.train_files,
             tokenizer=tokenizer,
@@ -135,6 +143,7 @@ class TaskRunner:
             config=config.data,
         )
         train_sampler = create_rl_sampler(config.data, train_dataset)
+        # 创建并运行训练器
         trainer = AgentFlowTrainer(
             config=config,
             tokenizer=tokenizer,
