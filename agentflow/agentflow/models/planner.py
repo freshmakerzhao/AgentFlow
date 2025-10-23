@@ -57,6 +57,9 @@ class Planner:
 
         return self.base_response
 
+    # 目的：把用户的 query（和图片）转换成结构化的 “query_analysis” ，告诉后续 Planner 需要哪些技能/工具和总体求解方向。
+    # 输入：question，image（图片路径）
+    # 输出：返回一个字符串（来自 LLM 的 QueryAnalysis），并把解析结果保存在 self.query_analysis。
     def analyze_query(self, question: str, image: str) -> str:
         image_info = self.get_image_info(image)
 
